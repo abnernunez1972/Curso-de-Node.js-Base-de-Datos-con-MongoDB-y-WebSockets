@@ -7,7 +7,9 @@ const controller = require('./controller')
 
 //!||
 router.get('/', (req, res) => {
-	controller.getMessages()
+	const filterMessages = req.query.user || null;
+
+	controller.getMessages(filterMessages)
 	.then((messageList) => {
 		response.success(req,res,messageList,200);
 
@@ -41,32 +43,27 @@ router.post('/', (req, res) => {
 	})
 })
 
-//!||
-router.delete('/', (req, res) => {
-	//console.log(req.headers)
-	console.log(req.body)
-	console.log(req.query)
-	res.header({
-		Valor: 'Personalizado',
+router.patch('/:id', (req, res) => {
+ controller.updateMessage(req.params.id,req.body.message)
+ .then((data) =>{
+	response.success(req,res,data,200);
 	})
-	//?Enviamos un send desde otras funciones en otro archivo (response)
-	if (req.query.error == 'ok') {
-		response.error(
-			req,
-			res,
-			'Tu peticion por url no puede ser completada',
-			403,
-			'Parametro rechazado',
-		)
-	} else {
-		response.error(
-			req,
-			res,
-			'hola desde delete aqui te retornaré un 404 :B',
-			403,
-			'Trataron de usar delete',
-		)
-	}
+.catch(e => {
+	response.error(req,res,'Error Interno',e);
+})
+
+})
+
+//!||
+router.delete('/:id', (req, res) => {
+	controller.deleteMessage(req.params.id)
+	.then(() => {
+		response.success(req,res,`usuario ${req.params.id} eliminado `,200);	
+	})
+	.catch(e => {
+		response.error(req,res,'Error Interno',e);
+	})
+	
 })
 
 module.exports = router
