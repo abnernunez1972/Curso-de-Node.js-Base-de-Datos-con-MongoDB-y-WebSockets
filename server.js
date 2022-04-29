@@ -21,11 +21,6 @@ app.use('/app',express.static('public'));
 app.listen(3000);
 console.log('La aplicacin esta corriendo en hhtp://localhos:3000');
 
-
-const user ='abner';
-const pass = 'KHNRPUXKAn6MFDCN';
-const host = 'cluster0.y9pjg.mongodb.net';
-const database = 'Platzi';
 const url = `mongodb+srv://abner:KHNRPUXKAn6MFDCN@cluster0.y9pjg.mongodb.net/Platzi?retryWrites=true&w=majority`;
 
 db(url);
