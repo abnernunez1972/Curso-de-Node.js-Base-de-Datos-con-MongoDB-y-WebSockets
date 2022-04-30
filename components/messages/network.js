@@ -1,14 +1,16 @@
 const express = require('express')
 const router = express.Router()
-
-// Modulos locales
+const multer = require('multer');
 const response = require('../../network/response')
 const controller = require('./controller')
+//
 
-//!||
+const upload = multer({
+	dest: 'public/files/',
+});
+
 router.get('/', (req, res) => {
 	const filterMessages = req.query.user || null;
-
 	controller.getMessages(filterMessages)
 	.then((messageList) => {
 		response.success(req,res,messageList,200);
@@ -19,11 +21,9 @@ router.get('/', (req, res) => {
 	})
 });	
 //!||
-router.post('/', (req, res) => {
-	//? Enviamos info de el req a el archivo -> controller lo que retorna una promesa
-	//? Después recibimos la response de el archivo response y enviamos success o error
+router.post('/',upload.single('file'), (req, res) => {
 	controller // -> Controller
-		.addMessage(req.body.user, req.body.message)
+		.addMessage(req.body.user, req.body.message,req.file)
 		.then(fullMessage => {
 			response.success(req, res, fullMessage, 201, 'Datos recibidos') // -> Response
 		})
