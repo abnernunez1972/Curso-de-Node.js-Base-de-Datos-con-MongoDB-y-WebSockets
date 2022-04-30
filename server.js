@@ -1,11 +1,14 @@
-const { application } = require('express');
 const express = require('express');
-const req = require('express/lib/request');
-const { status } = require('express/lib/response');
+const app = express();
+const server = require('http').Server(app);
+
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const socket = require('./socket');
 const db = require('./db');
 const router = require('./network/routes');
-var app = express();
-
+const config = require('./config');
+require('dotenv').config()
 // Express ya viene incluido el Body-Pasrser
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
@@ -14,15 +17,21 @@ app.use(express.urlencoded({extended : true}));
 //
 // Activar el Router al final de los ENDPOINT
 //app.use(router);
+
+socket.connect(server);
 router(app);
+
 //
-app.use('/app',express.static('public')); 
+app.use(config.publicRoute,express.static('public')); 
 
 // Abrir servdior Express 
-app.listen(3000);
-console.log('La aplicacin esta corriendo en hhtp://localhos:3000');
+server.listen(config.port, function() {
+    console.log('La aplicacin esta corriendo en ' + config.host + ":" + config.port);
+});
 
-const url = `mongodb+srv://abner:UTVaDzNyc7xuBxwh@cluster0.y9pjg.mongodb.net/Platzi?retryWrites=true&w=majority`;
 
-db(url);
+
+db(config.dbUrl);
+
+app.use(cors());
 //
